@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import modelPath from '../static/lighted.glb'; // Path to the GLB model
+import modelPath from '../static/goodtextured.glb'; // Path to the GLB model
 
 // Scene, Camera, Renderer
 const canvas = document.getElementById('webgl');
@@ -43,9 +43,9 @@ loader.load(
         }
 
         // Initial model properties
-        model.scale.set(0.03, 0.03, 0.03);
-        model.position.set(0, -2, 0);
-        model.rotation.set(0, 205, 0);
+        model.scale.set(0.4, 0.4, 0.4);
+        model.position.set(0, 0, 0);
+        model.rotation.set(0.5, 0, 0);
         console.log("Model loaded and added to the scene.");
     },
     undefined,
