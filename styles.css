@@ -1,9 +1,19 @@
-h1{
-    font-size: 300px;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center; 
-    height: 20vh;
+h1 {
+    font-size: 40px;
+    font-family: Arial, sans-serif;
+    position: fixed;
+    bottom: 15%; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    margin: 0; 
+}
 
+
+img{
+    width: 85%;
+    filter: brightness(0);
+    display: flex;
+    justify-content: center;
+    margin: 90 auto;
+    z-index: -1;
 }
