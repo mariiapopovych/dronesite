@@ -22,6 +22,11 @@ let mixer = null;
 let animationClip = null;
 let model = null;
 
+// Track mouse movement
+let isMouseDown = false;
+let lastMouseX = 0;
+let rotationY = 0; // Accumulated rotation along Y-axis
+
 // Load 3D Model
 const loader = new GLTFLoader();
 loader.load(
@@ -55,6 +60,9 @@ loader.load(
 );
 
 // Scroll Animation Logic
+let lastNormalizedScroll = 0; // Track last scroll to avoid redundant updates
+let lastAnimationTime = 0; // Track the last animation time for smooth transitions
+
 window.addEventListener('scroll', () => {
     if (mixer && animationClip) {
         const scrollY = window.scrollY;
@@ -63,17 +71,56 @@ window.addEventListener('scroll', () => {
         // Normalize scroll value between 0 and 1
         const normalizedScroll = Math.min(scrollY / scrollableHeight, 1);
 
+        // Prevent redundant updates
+        if (normalizedScroll === lastNormalizedScroll) return;
+
         // Map scroll to animation time
         const animationDuration = animationClip.duration; // Total animation duration
-        const time = normalizedScroll * animationDuration;
+        const targetTime = normalizedScroll * animationDuration;
 
-        // Update animation mixer time
-        mixer.setTime(time);
+        // Smooth transition: Interpolate between last time and target time
+        const timeDelta = targetTime - lastAnimationTime;
 
-        console.log(`ScrollY: ${scrollY}, NormalizedScroll: ${normalizedScroll}, Animation Time: ${time}`);
+        // Small threshold to make the transition smoother
+        if (Math.abs(timeDelta) > 0.01) {
+            lastAnimationTime += timeDelta * 0.1; // Adjust 0.1 for smoothing speed
+            mixer.setTime(lastAnimationTime);
+        } else {
+            lastAnimationTime = targetTime; // Snap to target if close enough
+            mixer.setTime(lastAnimationTime);
+        }
+
+        console.log(`ScrollY: ${scrollY}, NormalizedScroll: ${normalizedScroll}, Animation Time: ${lastAnimationTime}`);
+
+        // Update last scroll position
+        lastNormalizedScroll = normalizedScroll;
     } else {
         console.warn("Mixer or animation clip is not ready yet.");
     }
+});
+
+
+// Mouse Events for Rotation
+canvas.addEventListener('mousedown', (event) => {
+    isMouseDown = true;
+    lastMouseX = event.clientX;
+});
+
+canvas.addEventListener('mousemove', (event) => {
+    if (isMouseDown && model) {
+        const deltaX = event.clientX - lastMouseX; // Calculate horizontal mouse movement
+        rotationY += deltaX * 0.005; // Adjust rotation speed as needed
+        model.rotation.y = rotationY; // Update model's Y-axis rotation
+        lastMouseX = event.clientX; // Update last mouse position
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    isMouseDown = false;
+});
+
+canvas.addEventListener('mouseleave', () => {
+    isMouseDown = false;
 });
 
 // Animation Loop
